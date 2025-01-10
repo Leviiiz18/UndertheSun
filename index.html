@@ -16,30 +16,73 @@
             background-image: url("https://upload.wikimedia.org/wikipedia/commons/c/ce/Falnir_skylines_viewed_from_Kankanady.jpg");
             background-size: cover;
             background-position: center;
-            color: rgb(0, 0, 0);
+            color: rgb(255, 255, 255);
             text-align: center;
+            position: relative;
         }
+
+        /* Overlay for better text visibility */
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* Dark overlay */
+            z-index: -1;
+        }
+
+        /* Navigation bar styles */
+        nav {
+            position: absolute;
+            top: 0px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px 0;
+            z-index: 10;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #4CAF50;
+        }
+
         header {
             margin-bottom: 20px;
         }
+
         header h1 {
             font-size: 2.5rem;
             margin: 0;
         }
+
         header p {
             font-size: 1.2rem;
             margin: 10px 0 0;
         }
+
         .image-container {
             margin: 20px 0;
             width: 80%;
             max-width: 600px;
         }
+
         .image-container img {
             width: 100%;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
+
         .redirect-button {
             background-color: #4CAF50;
             color: white;
@@ -51,9 +94,11 @@
             transition: background-color 0.3s ease;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
+
         .redirect-button:hover {
             background-color: #03c809;
         }
+
         footer {
             margin-top: 20px;
             font-size: 0.9rem;
@@ -62,16 +107,25 @@
 </head>
 
 <body>
-    <header>
-       <a href="index.html">
-            <img src="C:\Users\HP\OneDrive\Desktop\Aloy Hack\gojam.png" alt="GoJam Logo" width="100px" style="position: absolute; top: 10px; left: 10px;">
-       </a>
-       <h1>Welcome to GoJam!</h1>
-       <p>Your one-stop solution for a better commute</p>
-      </header>
+    <!-- Navigation Bar -->
+    <nav>
+        <a href="#support">Support</a>
+        <a href="#about">About</a>
+        <a href="#privacy">Privacy</a>
+        <a href="#profile">Profile</a>
+        <a href="#copyright">Copyright</a>
+    </nav>
 
-   
+    <header>
+        <a href="index.html">
+            <img src="images/gojam.png" alt="GoJam Logo" width="100px" style="position: absolute; top: 10px; left: 10px;">
+        </a>
+        <h1>Welcome to GoJam!</h1>
+        <p>Your one-stop solution for a better commute</p>
+    </header>
+
     <button class="redirect-button" onclick="window.location.href='map2.html'">Explore the Map</button>
+    
     <footer>
         <p>&copy; GoJam!. All rights reserved.</p>
     </footer>
