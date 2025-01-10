@@ -16,17 +16,24 @@
             background: linear-gradient(135deg, #6a11cb, #2575fc);
         }
         .container {
+            position: absolute;
             background: white;
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             width: 100%;
             max-width: 400px;
+            transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
         }
-        .container h2 {
-            margin: 0 0 20px;
-            text-align: center;
-            color: #333;
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(100%);
+        }
+        .show {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateX(0);
         }
         .form-group {
             margin-bottom: 15px;
@@ -80,7 +87,7 @@
     </style>
 </head>
 <body>
-    <div class="container" id="loginContainer">
+    <div class="container show" id="loginContainer">
         <h2>Login</h2>
         <form id="loginForm">
             <div class="form-group">
@@ -97,7 +104,7 @@
         <span class="toggle-link" id="showSignup">Don't have an account? Sign up</span>
     </div>
 
-    <div class="container" id="signupContainer" style="display: none;">
+    <div class="container hidden" id="signupContainer">
         <h2>Sign Up</h2>
         <form id="signupForm">
             <div class="form-group">
@@ -116,69 +123,62 @@
     </div>
 
     <script>
-        // Containers
-        const loginContainer = document.getElementById('loginContainer');
-        const signupContainer = document.getElementById('signupContainer');
+        document.addEventListener("DOMContentLoaded", () => {
+            const loginContainer = document.getElementById('loginContainer');
+            const signupContainer = document.getElementById('signupContainer');
+            const showSignup = document.getElementById('showSignup');
+            const showLogin = document.getElementById('showLogin');
 
-        // Toggle links
-        const showSignup = document.getElementById('showSignup');
-        const showLogin = document.getElementById('showLogin');
+            // Toggle between forms
+            showSignup.addEventListener('click', () => {
+                loginContainer.classList.remove('show');
+                loginContainer.classList.add('hidden');
+                signupContainer.classList.remove('hidden');
+                signupContainer.classList.add('show');
+            });
 
-        // Forms
-        const loginForm = document.getElementById('loginForm');
-        const signupForm = document.getElementById('signupForm');
+            showLogin.addEventListener('click', () => {
+                signupContainer.classList.remove('show');
+                signupContainer.classList.add('hidden');
+                loginContainer.classList.remove('hidden');
+                loginContainer.classList.add('show');
+            });
 
-        // Messages
-        const loginError = document.getElementById('loginError');
-        const signupSuccess = document.getElementById('signupSuccess');
-        const signupError = document.getElementById('signupError');
+            // Simulated user storage using localStorage
+            const users = JSON.parse(localStorage.getItem('users')) || [];
 
-        // Event listeners for toggling
-        showSignup.addEventListener('click', () => {
-            loginContainer.style.display = 'none';
-            signupContainer.style.display = 'block';
-        });
+            // Signup logic
+            document.getElementById('signupForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const username = document.getElementById('signupUsername').value;
+                const password = document.getElementById('signupPassword').value;
 
-        showLogin.addEventListener('click', () => {
-            signupContainer.style.display = 'none';
-            loginContainer.style.display = 'block';
-        });
+                if (users.find(user => user.username === username)) {
+                    document.getElementById('signupError').textContent = 'Username already exists.';
+                    document.getElementById('signupSuccess').textContent = '';
+                } else {
+                    users.push({ username, password });
+                    localStorage.setItem('users', JSON.stringify(users));
+                    document.getElementById('signupSuccess').textContent = 'Account created successfully!';
+                    document.getElementById('signupError').textContent = '';
+                    this.reset();
+                }
+            });
 
-        // Simulated user storage using localStorage
-        const users = JSON.parse(localStorage.getItem('users')) || [];
+            // Login logic
+            document.getElementById('loginForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const username = document.getElementById('loginUsername').value;
+                const password = document.getElementById('loginPassword').value;
 
-        // Signup logic
-        signupForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const username = document.getElementById('signupUsername').value;
-            const password = document.getElementById('signupPassword').value;
+                const user = users.find(user => user.username === username && user.password === password);
 
-            if (users.find(user => user.username === username)) {
-                signupError.textContent = 'Username already exists.';
-                signupSuccess.textContent = '';
-            } else {
-                users.push({ username, password });
-                localStorage.setItem('users', JSON.stringify(users));
-                signupSuccess.textContent = 'Account created successfully!';
-                signupError.textContent = '';
-                signupForm.reset();
-            }
-        });
-
-        // Login logic
-        loginForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const username = document.getElementById('loginUsername').value;
-            const password = document.getElementById('loginPassword').value;
-
-            const user = users.find(user => user.username === username && user.password === password);
-
-            if (user) {
-                // Redirect to index.html
-                window.location.href = 'index.html';
-            } else {
-                loginError.textContent = 'Invalid username or password.';
-            }
+                if (user) {
+                    window.location.href = 'index.html';
+                } else {
+                    document.getElementById('loginError').textContent = 'Invalid username or password.';
+                }
+            });
         });
     </script>
 </body>
