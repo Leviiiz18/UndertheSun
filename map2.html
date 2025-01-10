@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Maps - Mangalore</title>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css' rel='stylesheet' />
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.css" type="text/css">
+    <style>
+        body { margin: 0; padding: 0;}
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiYWRpdHlhNDI4NyIsImEiOiJjbHE2YmJwa2kwZzlpMmtwN2tvdnhtdWluIn0.Vu6M_iZve1_qrnxle37NiQ';
+
+        // Initialize the map with Mangalore as the default center
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/satellite-streets-v12',
+            center: [74.8560, 12.9141], // Mangalore coordinates
+            zoom: 12 // Adjusted zoom level for Mangalore
+        });
+
+        // Add a marker for Mangalore
+        new mapboxgl.Marker({
+            color: 'purple',
+            rotation: 45
+        })
+        .setLngLat([74.8560, 12.9141]) // Mangalore coordinates
+        .addTo(map);
+
+        // Add controls
+        map.addControl(new mapboxgl.FullscreenControl(), 'top-left');
+        map.addControl(new mapboxgl.NavigationControl(), 'top-left');
+
+        // Add directions control
+        const directions = new MapboxDirections({
+            accessToken: mapboxgl.accessToken
+        });
+        map.addControl(directions, 'top-right');
+    </script>
+</body>
+</html>
+<!-- Add this inside your map container -->
+<div id="trafficUpdateButton">+</div>
+
+<style>
+    /* Styling the + button */
+    #trafficUpdateButton {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        color: white;
+        font-size: 30px;
+        font-weight: bold;
+        border: none;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 50px;
+        cursor: pointer;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        z-index: 1000; /* Ensures it's above the map */
+    }
+
+    #trafficUpdateButton:hover {
+        background: linear-gradient(135deg, #2575fc, #6a11cb);
+    }
+</style>
+
+<script>
+    // Redirect to the traffic update page when the button is clicked
+    const trafficUpdateButton = document.getElementById('trafficUpdateButton');
+    trafficUpdateButton.addEventListener('click', () => {
+        window.location.href = 'traffic_update.html'; // Change the link to your actual traffic update page
+    });
+</script>

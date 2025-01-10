@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Mangalore Map</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to bottom right, #007BFF, #00C6FF);
+            color: white;
+            text-align: center;
+        }
+        header {
+            margin-bottom: 20px;
+        }
+        header h1 {
+            font-size: 2.5rem;
+            margin: 0;
+        }
+        header p {
+            font-size: 1.2rem;
+            margin: 10px 0 0;
+        }
+        .image-container {
+            margin: 20px 0;
+            width: 80%;
+            max-width: 600px;
+        }
+        .image-container img {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        .redirect-button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .redirect-button:hover {
+            background-color: #218838;
+        }
+        footer {
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome to Mangalore Map</h1>
+        <p>Your guide to exploring the beauty of Mangalore</p>
+    </header>
+    <div class="image-container">
+        <img src="https://www.awaycabs.in/uploads/image/tour-packages/mangalore-local-tour-1/mangalore-main-1.jpg" alt="Mangalore Landscape">
+    </div>
+    <button class="redirect-button" onclick="window.location.href='map2.html'">Explore the Map</button>
+    <footer>
+        <p>&copy; 2025 Mangalore Map. All rights reserved.</p>
+    </footer>
+</body>
+</html>

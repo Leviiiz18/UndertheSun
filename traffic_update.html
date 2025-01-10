@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Updates</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ff7e5f, #feb47b);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        form {
+            background: white;
+            color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+        }
+        form .form-group {
+            margin-bottom: 15px;
+        }
+        form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        form input, form textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        form textarea {
+            resize: none;
+        }
+        form button {
+            width: 100%;
+            padding: 10px;
+            background: #ff7e5f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        form button:hover {
+            background: #feb47b;
+        }
+        .success, .error {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Post Traffic Updates</h1>
+    <form id="trafficForm">
+        <div class="form-group">
+            <label for="location">Location</label>
+            <input type="text" id="location" placeholder="Enter location of congestion" required>
+        </div>
+        <div class="form-group">
+            <label for="details">Details</label>
+            <textarea id="details" rows="4" placeholder="Describe the traffic situation" required></textarea>
+        </div>
+        <button type="submit">Post Update</button>
+        <div class="success" id="successMessage"></div>
+        <div class="error" id="errorMessage"></div>
+    </form>
+    <script>
+        document.getElementById('trafficForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const location = document.getElementById('location').value;
+            const details = document.getElementById('details').value;
+
+            if (location && details) {
+                // Mocking a server save operation
+                console.log('Traffic update submitted:', { location, details });
+
+                // Display success message
+                document.getElementById('successMessage').textContent = 'Update posted successfully!';
+                document.getElementById('errorMessage').textContent = '';
+                document.getElementById('trafficForm').reset();
+            } else {
+                // Display error message
+                document.getElementById('errorMessage').textContent = 'Please fill in all fields.';
+                document.getElementById('successMessage').textContent = '';
+            }
+        });
+    </script>
+</body>
+</html>
