@@ -9,76 +9,194 @@
     <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.js"></script>
     <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.css" type="text/css">
     <style>
-        body { margin: 0; padding: 0;}
+        body { margin: 0; padding: 0; }
         #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        
+        #locationInput {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: #ffffff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #locationSearch {
+            width: 300px;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+        }
+        #locateButton, #trafficUpdateButton {
+            padding: 8px 12px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        #locateButton {
+            background: linear-gradient(135deg, #4CAF50, #81C784);
+        }
+        #locateButton:hover {
+            background: linear-gradient(135deg, #81C784, #4CAF50);
+        }
+        #trafficUpdateButton {
+            background: linear-gradient(135deg, #FF5722, #FF8A65);
+        }
+        #trafficUpdateButton:hover {
+            background: linear-gradient(135deg, #FF8A65, #FF5722);
+        }
+        
+        .pulse {
+            position: absolute;
+            border-radius: 50%;
+            animation: pulse-animation 2s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pulse-animation {
+            0% {
+                transform: scale(0.5);
+                opacity: 0.6;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0.3;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
+    <div id="locationInput">
+        <input type="text" id="locationSearch" placeholder="Enter a place..." />
+        <button id="locateButton">Locate</button>
+        <button id="trafficUpdateButton" onclick="addTrafficUpdate()">Traffic Updates</button>
+    </div>
     <div id="map"></div>
     <script>
         mapboxgl.accessToken = 'pk.eyJ1IjoiYWRpdHlhNDI4NyIsImEiOiJjbHE2YmJwa2kwZzlpMmtwN2tvdnhtdWluIn0.Vu6M_iZve1_qrnxle37NiQ';
 
-        // Initialize the map with Mangalore as the default center
         const map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/satellite-streets-v12',
-            center: [74.8560, 12.9141], // Mangalore coordinates
-            zoom: 12 // Adjusted zoom level for Mangalore
+            center: [74.8560, 12.9141],
+            zoom: 12
         });
 
-        // Add a marker for Mangalore
-        new mapboxgl.Marker({
-            color: 'purple',
-            rotation: 45
-        })
-        .setLngLat([74.8560, 12.9141]) // Mangalore coordinates
-        .addTo(map);
-
-        // Add controls
         map.addControl(new mapboxgl.FullscreenControl(), 'top-left');
         map.addControl(new mapboxgl.NavigationControl(), 'top-left');
 
-        // Add directions control
-        const directions = new MapboxDirections({
-            accessToken: mapboxgl.accessToken
+        let marker; // Define a variable to hold the general marker instance
+        const trafficMarkers = []; // Array to store traffic markers
+
+        const locateButton = document.getElementById('locateButton');
+        const locationSearch = document.getElementById('locationSearch');
+
+        locateButton.addEventListener('click', () => {
+            const place = locationSearch.value;
+            if (!place) {
+                alert('Please enter a location.');
+                return;
+            }
+            const bbox = [74.7500, 12.8000, 74.9500, 12.9500];
+            fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(place)}.json?bbox=${bbox.join(',')}&access_token=${mapboxgl.accessToken}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.features.length === 0) {
+                        alert('Location not found in Mangalore.');
+                        return;
+                    }
+                    const location = data.features[0].center;
+                    map.flyTo({ center: location, zoom: 12 });
+
+                    if (marker) {
+                        marker.remove();
+                    }
+
+                    marker = new mapboxgl.Marker({ color: 'red' })
+                        .setLngLat(location)
+                        .addTo(map);
+                })
+                .catch(err => console.error('Geocoding error:', err));
         });
-        map.addControl(directions, 'top-right');
+
+        function addTrafficUpdate() {
+            const place = locationSearch.value;
+            if (!place) {
+                alert('Please enter a location for the traffic update.');
+                return;
+            }
+
+            const bbox = [74.7500, 12.8000, 74.9500, 12.9500];
+            fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(place)}.json?bbox=${bbox.join(',')}&access_token=${mapboxgl.accessToken}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.features.length === 0) {
+                        alert('Location not found in Mangalore.');
+                        return;
+                    }
+
+                    const severity = prompt("Enter traffic severity (Low, Medium, High):").toLowerCase();
+                    let color;
+                    let pulseSize;
+
+                    if (severity === 'low') {
+                        color = 'green';
+                        pulseSize = '50px';
+                    } else if (severity === 'medium') {
+                        color = 'orange';
+                        pulseSize = '75px';
+                    } else if (severity === 'high') {
+                        color = 'red';
+                        pulseSize = '100px';
+                    } else {
+                        alert('Invalid severity level. Please enter Low, Medium, or High.');
+                        return;
+                    }
+
+                    const location = data.features[0].center;
+                    const trafficMarker = new mapboxgl.Marker({ color: color })
+                        .setLngLat(location)
+                        .addTo(map)
+                        .setPopup(new mapboxgl.Popup().setHTML(`<strong>Traffic Alert:</strong> ${place}<br><strong>Severity:</strong> ${severity.charAt(0).toUpperCase() + severity.slice(1)}`))
+                        .togglePopup();
+
+                    trafficMarkers.push(trafficMarker);
+
+                    // Add radar effect
+                    const pulse = document.createElement('div');
+                    pulse.className = 'pulse';
+                    pulse.style.width = pulse.style.height = pulseSize;
+                    pulse.style.background = color;
+                    map.getContainer().appendChild(pulse);
+
+                    const [lng, lat] = location;
+                    const point = map.project([lng, lat]);
+                    pulse.style.left = `${point.x - parseInt(pulseSize) / 2}px`;
+                    pulse.style.top = `${point.y - parseInt(pulseSize) / 2}px`;
+
+                    // Automatically remove the marker and pulse after 5 minutes
+                    setTimeout(() => {
+                        trafficMarker.remove();
+                        const index = trafficMarkers.indexOf(trafficMarker);
+                        if (index !== -1) {
+                            trafficMarkers.splice(index, 1);
+                        }
+                        pulse.remove();
+                    }, 300000); // 5 minutes in milliseconds
+                })
+                .catch(err => console.error('Geocoding error:', err));
+        }
     </script>
 </body>
 </html>
-<!-- Add this inside your map container -->
-<div id="trafficUpdateButton">+</div>
-
-<style>
-    /* Styling the + button */
-    #trafficUpdateButton {
-        position: absolute;
-        bottom: 20px;
-        right: 20px;
-        width: 50px;
-        height: 50px;
-        background: linear-gradient(135deg, #6a11cb, #2575fc);
-        color: white;
-        font-size: 30px;
-        font-weight: bold;
-        border: none;
-        border-radius: 50%;
-        text-align: center;
-        line-height: 50px;
-        cursor: pointer;
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-        z-index: 1000; /* Ensures it's above the map */
-    }
-
-    #trafficUpdateButton:hover {
-        background: linear-gradient(135deg, #2575fc, #6a11cb);
-    }
-</style>
-
-<script>
-    // Redirect to the traffic update page when the button is clicked
-    const trafficUpdateButton = document.getElementById('trafficUpdateButton');
-    trafficUpdateButton.addEventListener('click', () => {
-        window.location.href = 'traffic_update.html'; // Change the link to your actual traffic update page
-    });
-</script>
