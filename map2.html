@@ -58,6 +58,7 @@
             border-radius: 50%;
             animation: pulse-animation 2s infinite;
             pointer-events: none;
+            z-index: 100;
         }
 
         @keyframes pulse-animation {
@@ -98,6 +99,7 @@
 
         let marker; // Define a variable to hold the general marker instance
         const trafficMarkers = []; // Array to store traffic markers
+        const pulseElements = {}; // Object to store pulse elements for each traffic marker
 
         const locateButton = document.getElementById('locateButton');
         const locationSearch = document.getElementById('locationSearch');
@@ -173,7 +175,7 @@
 
                     trafficMarkers.push(trafficMarker);
 
-                    // Add radar effect
+                    // Create a pulse effect and keep it fixed to the marker
                     const pulse = document.createElement('div');
                     pulse.className = 'pulse';
                     pulse.style.width = pulse.style.height = pulseSize;
@@ -185,6 +187,9 @@
                     pulse.style.left = `${point.x - parseInt(pulseSize) / 2}px`;
                     pulse.style.top = `${point.y - parseInt(pulseSize) / 2}px`;
 
+                    // Store the pulse element to reference it later
+                    pulseElements[`${lng},${lat}`] = pulse;
+
                     // Automatically remove the marker and pulse after 5 minutes
                     setTimeout(() => {
                         trafficMarker.remove();
@@ -193,10 +198,24 @@
                             trafficMarkers.splice(index, 1);
                         }
                         pulse.remove();
+                        delete pulseElements[`${lng},${lat}`]; // Remove pulse reference
                     }, 300000); // 5 minutes in milliseconds
                 })
                 .catch(err => console.error('Geocoding error:', err));
         }
+
+        // Update pulse position when the map is moved or zoomed
+        map.on('move', () => {
+            trafficMarkers.forEach(marker => {
+                const [lng, lat] = marker.getLngLat().toArray();
+                const pulse = pulseElements[`${lng},${lat}`];
+                if (pulse) {
+                    const point = map.project([lng, lat]);
+                    pulse.style.left = `${point.x - parseInt(pulse.style.width) / 2}px`;
+                    pulse.style.top = `${point.y - parseInt(pulse.style.height) / 2}px`;
+                }
+            });
+        });
     </script>
 </body>
 </html>
